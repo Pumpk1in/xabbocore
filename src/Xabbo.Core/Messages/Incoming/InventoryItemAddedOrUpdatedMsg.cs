@@ -19,6 +19,14 @@ public sealed record InventoryItemAddedOrUpdatedMsg(InventoryItem Item)
 {
     static ClientType IMessage<InventoryItemAddedOrUpdatedMsg>.SupportedClients => ClientType.Modern;
     static Identifier IMessage<InventoryItemAddedOrUpdatedMsg>.Identifier => In.FurniListAddOrUpdate;
-    static InventoryItemAddedOrUpdatedMsg IParser<InventoryItemAddedOrUpdatedMsg>.Parse(in PacketReader p) => new(p.Parse<InventoryItem>());
+    //static InventoryItemAddedOrUpdatedMsg IParser<InventoryItemAddedOrUpdatedMsg>.Parse(in PacketReader p) => new(p.Parse<InventoryItem>());
+
+    // Fix crash inventory pickup
+    static InventoryItemAddedOrUpdatedMsg IParser<InventoryItemAddedOrUpdatedMsg>.Parse(in PacketReader p)
+    {
+        int count = p.ReadInt(); // Lire le compteur d'items
+        return new(p.Parse<InventoryItem>());
+    }
+
     void IComposer.Compose(in PacketWriter p) => p.Compose(Item);
 }
