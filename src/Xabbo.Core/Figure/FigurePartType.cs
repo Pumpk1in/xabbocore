@@ -32,12 +32,12 @@ public enum FigurePartType
     LeftCoatSleeve,
     RightCoatSleeve,
     ChestPrint,
-    Pants,
-    PantsLeft,
-    PantsRight,
-    MiddleCoat,
-    MiddleCoatLeft,
-    MiddleCoatRight
+    Pets,
+    PetsLeft,
+    PetsRight,
+    Misc,
+    MiscLeft,
+    MiscRight
 }
 
 public static partial class XabboEnumExtensions
@@ -62,12 +62,12 @@ public static partial class XabboEnumExtensions
             FigurePartType.WaistAccessory => "wa",
             FigurePartType.Coat => "cc",
             FigurePartType.ChestPrint => "cp",
-            FigurePartType.Pants => "pt",
-            FigurePartType.PantsLeft => "ptl",
-            FigurePartType.PantsRight => "ptr",
-            FigurePartType.MiddleCoat => "mc",
-            FigurePartType.MiddleCoatLeft => "mcl",
-            FigurePartType.MiddleCoatRight => "mcr",
+            FigurePartType.Pets => "pt",
+            FigurePartType.PetsLeft => "ptl",
+            FigurePartType.PetsRight => "ptr",
+            FigurePartType.Misc => "mc",
+            FigurePartType.MiscLeft => "mcl",
+            FigurePartType.MiscRight => "mcr",
             _ => throw new ArgumentException($"Unknown figure part type: {figurePartType}", nameof(figurePartType)),
         };
     }
