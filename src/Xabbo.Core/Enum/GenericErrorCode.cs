@@ -3,5 +3,6 @@
 public enum GenericErrorCode
 {
     InvalidRoomPassword = -100002,
-    Kicked = 4008
+    Kicked = 4008,
+    BanFailed = 4011
 }
