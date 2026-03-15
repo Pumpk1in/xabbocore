@@ -11,7 +11,7 @@ namespace Xabbo.Core.Messages.Incoming;
 /// Identifiers:
 /// <list type="bullet">
 /// <item>Flash: <see cref="In.TradingCompleted"/></item>
-/// <item>Shockwave: <see cref="Xabbo.Messages.Shockwave.In.TRADE_COMPLETED_2"/></item>
+/// <item>Shockwave: <see cref="Xabbo.Messages.Shockwave.In.TRADE_COMPLETED"/></item>
 /// </list>
 /// </summary>
 public sealed record TradeCompletedMsg : IMessage<TradeCompletedMsg>
