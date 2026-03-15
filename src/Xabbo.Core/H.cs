@@ -74,12 +74,12 @@ public static partial class H
             case "lc": partType = FigurePartType.LeftCoatSleeve; break;
             case "rc": partType = FigurePartType.RightCoatSleeve; break;
             case "cp": partType = FigurePartType.ChestPrint; break;
-            case "pt": partType = FigurePartType.Pets; break;
-            case "ptl": partType = FigurePartType.PetsLeft; break;
-            case "ptr": partType = FigurePartType.PetsRight; break;
-            case "mc": partType = FigurePartType.Misc; break;
-            case "mcl": partType = FigurePartType.MiscLeft; break;
-            case "mcr": partType = FigurePartType.MiscRight; break;
+            case "pt": partType = FigurePartType.PetSlot; break;
+            case "ptl": partType = FigurePartType.PetLeft; break;
+            case "ptr": partType = FigurePartType.PetRight; break;
+            case "mc": partType = FigurePartType.MountCompanion; break;
+            case "mcl": partType = FigurePartType.MountCompanionLeft; break;
+            case "mcr": partType = FigurePartType.MountCompanionRight; break;
             default: partType = default; return false;
         }
         return true;
