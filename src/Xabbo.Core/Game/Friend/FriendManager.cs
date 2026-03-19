@@ -99,6 +99,11 @@ public sealed partial class FriendManager(IInterceptor interceptor, ILoggerFacto
     /// Occurs when a message is received from a friend.
     /// </summary>
     public event Action<FriendMessageEventArgs>? MessageReceived;
+
+    /// <summary>
+    /// Occurs when a room invitation is received from a friend.
+    /// </summary>
+    public event Action<RoomInviteEventArgs>? RoomInviteReceived;
     #endregion
 
     protected override void OnConnected(ConnectedEventArgs e)
@@ -275,5 +280,17 @@ public sealed partial class FriendManager(IInterceptor interceptor, ILoggerFacto
     {
         foreach (var message in messages)
             ReceiveMessage(message);
+    }
+
+    private void ReceiveRoomInvite(Id senderId, string message)
+    {
+        if (!_friends.TryGetValue(senderId, out Friend? friend))
+        {
+            _logger.LogWarning("Failed to get friend #{Id} from ID map for room invite.", senderId);
+            return;
+        }
+
+        _logger.LogInformation("Received room invite from '{Name}': '{Message}'.", friend.Name, message);
+        RoomInviteReceived?.Invoke(new RoomInviteEventArgs(friend, message));
     }
 }

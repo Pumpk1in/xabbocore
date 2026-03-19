@@ -151,4 +151,11 @@ partial class FriendManager
         using (_logger.MethodScope())
             ReceiveMessages(messages);
     }
+
+    [Intercept]
+    private void HandleRoomInvite(RoomInviteMsg msg)
+    {
+        using (_logger.MethodScope())
+            ReceiveRoomInvite(msg.SenderId, msg.Message);
+    }
 }
