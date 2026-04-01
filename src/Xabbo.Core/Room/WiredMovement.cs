@@ -87,6 +87,8 @@ public class AvatarWiredMovement : WiredMovement
         AnimationTime = p.ReadInt();
         BodyDirection = p.ReadInt();
         HeadDirection = p.ReadInt();
+        if (p.Client is ClientType.Flash or ClientType.Unity)
+            p.ReadBool(); // unknown field added in WIN63-202603311836
     }
 
     protected override void Compose(in PacketWriter p)
@@ -103,6 +105,8 @@ public class AvatarWiredMovement : WiredMovement
         p.WriteInt(AnimationTime);
         p.WriteInt(BodyDirection);
         p.WriteInt(HeadDirection);
+        if (p.Client is ClientType.Flash or ClientType.Unity)
+            p.WriteBool(false); // unknown field added in WIN63-202603311836
     }
 }
 
@@ -131,6 +135,8 @@ public class FloorItemWiredMovement : WiredMovement
         ItemId = p.ReadId();
         AnimationTime = p.ReadInt();
         Rotation = p.ReadInt();
+        if (p.Client is ClientType.Flash or ClientType.Unity)
+            p.ReadString(); // unknown field added in WIN63-202603311836
     }
 
     protected override void Compose(in PacketWriter p)
@@ -145,6 +151,8 @@ public class FloorItemWiredMovement : WiredMovement
         p.WriteId(ItemId);
         p.WriteInt(AnimationTime);
         p.WriteInt(Rotation);
+        if (p.Client is ClientType.Flash or ClientType.Unity)
+            p.WriteString(""); // unknown field added in WIN63-202603311836
     }
 }
 
