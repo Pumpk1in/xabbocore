@@ -251,15 +251,19 @@ public class GameDataLoader(
             _logger.LogDebug("Fetching {GamedataType} data from '{Url}'.", type, url);
 
             var res = await _http.GetAsync(url, cancellationToken);
-            if (res.StatusCode == HttpStatusCode.TemporaryRedirect &&
+            int redirectCount = 0;
+            while (res.StatusCode == HttpStatusCode.TemporaryRedirect &&
                 res.Headers.Location is not null)
             {
-                if (!TryGetHashFromLocation(res, out string? updatedHash))
-                    throw new Exception($"Failed to get updated hash from redirect location: '{res.Headers.Location}'.");
+                if (++redirectCount > 5)
+                    throw new Exception($"Too many redirects when downloading {type}.");
 
-                _logger.LogInformation("Updated {GameDataHash} hash '{OldHash}' -> '{NewHash}'.", type, hash, updatedHash);
+                if (TryGetHashFromLocation(res, out string? updatedHash))
+                {
+                    _logger.LogInformation("Updated {GameDataHash} hash '{OldHash}' -> '{NewHash}'.", type, hash, updatedHash);
+                    hash = updatedHash;
+                }
 
-                hash = updatedHash;
                 res = await _http.GetAsync(res.Headers.Location, cancellationToken);
             }
             res.EnsureSuccessStatusCode();
