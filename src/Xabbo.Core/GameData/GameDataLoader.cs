@@ -218,7 +218,10 @@ public class GameDataLoader(
             {
                 GameDataType? type = GetGameDataTypeFromName(entry.Name);
                 if (!type.HasValue)
-                    throw new Exception($"Unknown game data type: '{entry.Name}'.");
+                {
+                    _logger.LogWarning("Ignoring unknown game data type: '{Name}'.", entry.Name);
+                    continue;
+                }
                 fetchedHashes[type.Value] = entry.Hash;
             }
         }
