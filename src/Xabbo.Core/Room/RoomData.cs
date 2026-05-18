@@ -12,7 +12,11 @@ public class RoomData : RoomInfo, IRoomData, IParserComposer<RoomData>
     public bool IsRoomMuted { get; set; }
     public ModerationSettings Moderation { get; set; } = new();
     IModerationSettings IRoomData.Moderation => Moderation;
+    // TODO: identify field added in WIN63-202605181326 (always 0 in captures)
+    public int UnknownInt1 { get; set; }
     public bool CanMute { get; set; }
+    // TODO: identify field added in WIN63-202605181326
+    public bool UnknownBool1 { get; set; }
     public ChatSettings ChatSettings { get; set; } = new();
     IChatSettings IRoomData.ChatSettings => ChatSettings;
 
@@ -36,14 +40,20 @@ public class RoomData : RoomInfo, IRoomData, IParserComposer<RoomData>
 
         Moderation = p.Parse<ModerationSettings>();
 
-        CanMute = p.ReadBool();
-        ChatSettings = p.Parse<ChatSettings>();
+        if (p.Client is ClientType.Flash)
+            UnknownInt1 = p.ReadInt();
 
-        // if (p.Client == ClientType.Unity)
-        // {
-        //     p.ReadInt();
-        //     p.ReadInt();
-        // }
+        CanMute = p.ReadBool();
+
+        if (p.Client is ClientType.Flash)
+        {
+            UnknownBool1 = p.ReadBool();
+            // ChatSettings moved to a separate In.RoomChatSettings packet in WIN63-202605181326.
+        }
+        else
+        {
+            ChatSettings = p.Parse<ChatSettings>();
+        }
     }
 
     protected override void Compose(in PacketWriter p)
@@ -63,9 +73,15 @@ public class RoomData : RoomInfo, IRoomData, IParserComposer<RoomData>
 
         p.Compose(Moderation);
 
+        if (p.Client is ClientType.Flash)
+            p.WriteInt(UnknownInt1);
+
         p.WriteBool(CanMute);
 
-        p.Compose(ChatSettings);
+        if (p.Client is ClientType.Flash)
+            p.WriteBool(UnknownBool1);
+        else
+            p.Compose(ChatSettings);
     }
 
     static RoomData IParser<RoomData>.Parse(in PacketReader p)
