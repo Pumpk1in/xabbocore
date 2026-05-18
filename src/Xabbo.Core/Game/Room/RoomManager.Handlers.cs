@@ -366,6 +366,15 @@ partial class RoomManager
     [InterceptIn(nameof(In.RoomChatSettings))]
     private void HandleRoomChatSettings(Intercept e)
     {
+        if (e.Packet.Client is ClientType.Flash)
+        {
+            // WIN63-202605181326 reduced this packet to a single int (FloodProtection).
+            // Other ChatSettings fields are no longer sent — keep them at defaults.
+            var floodProtection = (ChatFloodProtection)e.Packet.Read<int>();
+            UpdateChatSettings(new ChatSettings { FloodProtection = floodProtection });
+            return;
+        }
+
         UpdateChatSettings(e.Packet.Read<ChatSettings>());
     }
 
