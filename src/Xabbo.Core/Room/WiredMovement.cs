@@ -88,7 +88,12 @@ public class AvatarWiredMovement : WiredMovement
         BodyDirection = p.ReadInt();
         HeadDirection = p.ReadInt();
         if (p.Client is ClientType.Flash or ClientType.Unity)
-            p.ReadBool(); // unknown field added in WIN63-202603311836
+        {
+            // WIN63-202603311836 added a bool; WIN63-202605181326 added an int
+            // that is only present when the bool is true (observed value: 200).
+            if (p.ReadBool())
+                p.ReadInt();
+        }
     }
 
     protected override void Compose(in PacketWriter p)
@@ -106,7 +111,7 @@ public class AvatarWiredMovement : WiredMovement
         p.WriteInt(BodyDirection);
         p.WriteInt(HeadDirection);
         if (p.Client is ClientType.Flash or ClientType.Unity)
-            p.WriteBool(false); // unknown field added in WIN63-202603311836
+            p.WriteBool(false); // matches the WIN63-202603311836 bool; we never emit the optional int
     }
 }
 
