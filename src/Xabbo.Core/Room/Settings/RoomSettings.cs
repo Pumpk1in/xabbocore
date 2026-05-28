@@ -99,6 +99,16 @@ public class RoomSettings : IParserComposer<RoomSettings>
 
     public bool EnlistByFurniContent { get; set; }
 
+    // Fields added/relocated in WIN63-202605181326 (Flash). See decompiled §_-S2Y§ / §_-u1r§.
+    public bool LeaveOnDoorTileEnabled { get; set; }
+    public bool IdleSleepEnabled { get; set; }
+    public int IdleSleepTimeoutSeconds { get; set; }
+    public bool IdleAutokickEnabled { get; set; }
+    public int IdleAutokickTimeoutSeconds { get; set; }
+    public bool MuteAllPets { get; set; }
+    /// <summary>Hidden by Builders Club placement limits. (Flash, parse-only — not sent on save.)</summary>
+    public bool HiddenByBc { get; set; }
+
     public RoomSettings()
     {
         Tags = [];
@@ -108,6 +118,12 @@ public class RoomSettings : IParserComposer<RoomSettings>
 
     protected RoomSettings(in PacketReader p) : this()
     {
+        if (p.Client is ClientType.Flash)
+        {
+            ParseFlash(in p);
+            return;
+        }
+
         Id = p.ReadId();
         Name = p.ReadString();
         Description = p.ReadString();
@@ -131,12 +147,53 @@ public class RoomSettings : IParserComposer<RoomSettings>
         Moderation = p.Parse<ModerationSettings>();
     }
 
+    // In.RoomSettingsData (3961), Flash — decompiled §_-S2Y§.parse
+    private void ParseFlash(in PacketReader p)
+    {
+        Id = p.ReadId();
+        Name = p.ReadString();
+        Description = p.ReadString();
+        Access = (RoomAccess)p.ReadInt(); // doorMode
+        Category = (RoomCategory)p.ReadInt();
+        MaxVisitors = p.ReadInt();
+        AbsoluteMaxVisitors = p.ReadInt();
+
+        Tags = [.. p.ReadStringArray()];
+
+        Trading = (TradePermissions)p.ReadInt();
+        AllowPets = p.ReadInt() == 1;
+        AllowOthersPetsToEat = p.ReadInt() == 1;
+        DisableRoomBlocking = p.ReadInt() == 1;
+        HideWalls = p.ReadInt() == 1;
+        WallThickness = (Thickness)p.ReadInt();
+        FloorThickness = (Thickness)p.ReadInt();
+
+        // ChatSettings reduced to a single FloodProtection int.
+        Chat = new ChatSettings { FloodProtection = (ChatFloodProtection)p.ReadInt() };
+
+        LeaveOnDoorTileEnabled = p.ReadBool();
+        IdleSleepEnabled = p.ReadBool();
+        IdleSleepTimeoutSeconds = p.ReadInt();
+        IdleAutokickEnabled = p.ReadBool();
+        IdleAutokickTimeoutSeconds = p.ReadInt();
+        MuteAllPets = p.ReadBool();
+
+        Moderation = p.Parse<ModerationSettings>();
+        HiddenByBc = p.ReadBool();
+    }
+
     /// <summary>
     /// Writes the values of this <see cref="RoomSettings"/> to the specified packet
     /// to be sent to the server with <see cref="Out.SaveRoomSettings"/>.
     /// </summary>
     void IComposer.Compose(in PacketWriter p)
     {
+        if (p.Client is ClientType.Flash)
+        {
+            ComposeFlash(in p);
+            return;
+        }
+
         p.WriteId(Id);
         p.WriteString(Name ?? "");
         p.WriteString(Description ?? "");
@@ -155,6 +212,37 @@ public class RoomSettings : IParserComposer<RoomSettings>
         p.Compose(Moderation);
         p.Compose(Chat);
         p.WriteBool(EnlistByFurniContent);
+    }
+
+    // Out.SaveRoomSettings, Flash — decompiled §_-u1r§ (NOT symmetric to parse:
+    // password after doorMode, moderation inline, no hiddenByBc).
+    private void ComposeFlash(in PacketWriter p)
+    {
+        p.WriteId(Id);
+        p.WriteString(Name ?? "");
+        p.WriteString(Description ?? "");
+        p.WriteInt((int)Access); // doorMode
+        p.WriteString(Password ?? "");
+        p.WriteInt(MaxVisitors);
+        p.WriteInt((int)Category);
+        p.WriteStringArray(Tags);
+        p.WriteInt((int)Trading);
+        p.WriteBool(AllowPets);
+        p.WriteBool(AllowOthersPetsToEat);
+        p.WriteBool(DisableRoomBlocking);
+        p.WriteBool(HideWalls);
+        p.WriteInt((int)WallThickness);
+        p.WriteInt((int)FloorThickness);
+        p.WriteInt((int)Moderation.Mute); // whoCanMute (inline, not via ModerationSettings)
+        p.WriteInt((int)Moderation.Kick); // whoCanKick
+        p.WriteInt((int)Moderation.Ban); // whoCanBan
+        p.WriteInt((int)Chat.FloodProtection); // chatFloodSensitivity
+        p.WriteBool(LeaveOnDoorTileEnabled);
+        p.WriteBool(IdleSleepEnabled);
+        p.WriteInt(IdleSleepTimeoutSeconds);
+        p.WriteBool(IdleAutokickEnabled);
+        p.WriteInt(IdleAutokickTimeoutSeconds);
+        p.WriteBool(MuteAllPets);
     }
 
     static RoomSettings IParser<RoomSettings>.Parse(in PacketReader p) => new(p);
