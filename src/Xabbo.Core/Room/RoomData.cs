@@ -12,13 +12,13 @@ public class RoomData : RoomInfo, IRoomData, IParserComposer<RoomData>
     public bool IsRoomMuted { get; set; }
     public ModerationSettings Moderation { get; set; } = new();
     IModerationSettings IRoomData.Moderation => Moderation;
-    // TODO: identify field added in WIN63-202605181326 (always 0 in captures)
-    public int UnknownInt1 { get; set; }
     public bool CanMute { get; set; }
-    // TODO: identify field added in WIN63-202605181326
-    public bool UnknownBool1 { get; set; }
     public ChatSettings ChatSettings { get; set; } = new();
     IChatSettings IRoomData.ChatSettings => ChatSettings;
+    /// <summary>
+    /// Whether the connection to the room is being opened. (Flash only, WIN63-202605181326.)
+    /// </summary>
+    public bool OpeningConnection { get; set; }
 
     public RoomData()
     {
@@ -40,15 +40,14 @@ public class RoomData : RoomInfo, IRoomData, IParserComposer<RoomData>
 
         Moderation = p.Parse<ModerationSettings>();
 
-        if (p.Client is ClientType.Flash)
-            UnknownInt1 = p.ReadInt();
-
         CanMute = p.ReadBool();
 
         if (p.Client is ClientType.Flash)
         {
-            UnknownBool1 = p.ReadBool();
-            // ChatSettings moved to a separate In.RoomChatSettings packet in WIN63-202605181326.
+            // WIN63-202605181326: ChatSettings reduced to a single FloodProtection int,
+            // followed by an OpeningConnection bool.
+            ChatSettings = new ChatSettings { FloodProtection = (ChatFloodProtection)p.ReadInt() };
+            OpeningConnection = p.ReadBool();
         }
         else
         {
@@ -73,15 +72,17 @@ public class RoomData : RoomInfo, IRoomData, IParserComposer<RoomData>
 
         p.Compose(Moderation);
 
-        if (p.Client is ClientType.Flash)
-            p.WriteInt(UnknownInt1);
-
         p.WriteBool(CanMute);
 
         if (p.Client is ClientType.Flash)
-            p.WriteBool(UnknownBool1);
+        {
+            p.WriteInt((int)ChatSettings.FloodProtection);
+            p.WriteBool(OpeningConnection);
+        }
         else
+        {
             p.Compose(ChatSettings);
+        }
     }
 
     static RoomData IParser<RoomData>.Parse(in PacketReader p)
