@@ -35,6 +35,11 @@ public interface IUser : IAvatar
     bool IsStaff { get; }
 
     /// <summary>
+    /// The badge rank of the user.
+    /// </summary>
+    int BadgeRank { get; }
+
+    /// <summary>
     /// The rights level of the user in the room.
     /// </summary>
     RightsLevel RightsLevel { get; }

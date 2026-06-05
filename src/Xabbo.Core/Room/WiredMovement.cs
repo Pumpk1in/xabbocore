@@ -69,6 +69,8 @@ public class AvatarWiredMovement : WiredMovement
     public bool IsSlide { get; set; }
     public int BodyDirection { get; set; }
     public int HeadDirection { get; set; }
+    public bool HasJump { get; set; }
+    public int JumpPower { get; set; }
 
     public AvatarWiredMovement() : base(WiredMovementType.Avatar) { }
 
@@ -89,10 +91,9 @@ public class AvatarWiredMovement : WiredMovement
         HeadDirection = p.ReadInt();
         if (p.Client is ClientType.Flash)
         {
-            // WIN63-202603311836 added a bool; WIN63-202605181326 added an int
-            // that is only present when the bool is true (observed value: 200).
-            if (p.ReadBool())
-                p.ReadInt();
+            HasJump = p.ReadBool();
+            if (HasJump)
+                JumpPower = p.ReadInt();
         }
     }
 
@@ -111,7 +112,11 @@ public class AvatarWiredMovement : WiredMovement
         p.WriteInt(BodyDirection);
         p.WriteInt(HeadDirection);
         if (p.Client is ClientType.Flash)
-            p.WriteBool(false); // matches the WIN63-202603311836 bool; we never emit the optional int
+        {
+            p.WriteBool(HasJump);
+            if (HasJump)
+                p.WriteInt(JumpPower);
+        }
     }
 }
 
@@ -124,6 +129,10 @@ public class FloorItemWiredMovement : WiredMovement
     public Tile Destination { get; set; }
     public Id ItemId { get; set; }
     public int Rotation { get; set; }
+    public bool HasOvershoot { get; set; }
+    public int OvershootDistance { get; set; }
+    public bool HasCurve { get; set; }
+    public int CurveStrength { get; set; }
 
     public FloorItemWiredMovement() : base(WiredMovementType.FloorItem) { }
 
@@ -141,7 +150,15 @@ public class FloorItemWiredMovement : WiredMovement
         AnimationTime = p.ReadInt();
         Rotation = p.ReadInt();
         if (p.Client is ClientType.Flash)
-            p.ReadString(); // unknown field added in WIN63-202603311836 (Flash only)
+        {
+            HasOvershoot = p.ReadBool();
+            if (HasOvershoot)
+                OvershootDistance = p.ReadInt();
+
+            HasCurve = p.ReadBool();
+            if (HasCurve)
+                CurveStrength = p.ReadInt();
+        }
     }
 
     protected override void Compose(in PacketWriter p)
@@ -157,7 +174,15 @@ public class FloorItemWiredMovement : WiredMovement
         p.WriteInt(AnimationTime);
         p.WriteInt(Rotation);
         if (p.Client is ClientType.Flash)
-            p.WriteString(""); // unknown field added in WIN63-202603311836 (Flash only)
+        {
+            p.WriteBool(HasOvershoot);
+            if (HasOvershoot)
+                p.WriteInt(OvershootDistance);
+
+            p.WriteBool(HasCurve);
+            if (HasCurve)
+                p.WriteInt(CurveStrength);
+        }
     }
 }
 

@@ -13,8 +13,7 @@ public class User(Id id, int index) : Avatar(AvatarType.User, id, index), IUser
     public int AchievementScore { get; set; }
     public bool IsStaff { get; set; }
     public string BadgeCode { get; set; } = "";
-    // TODO: identify field added in WIN63-202605181326 (always -1 in captures)
-    public int UnknownInt1 { get; set; } = -1;
+    public int BadgeRank { get; set; } = -1;
 
     public RightsLevel RightsLevel => CurrentUpdate?.RightsLevel ?? RightsLevel.None;
     public bool HasRights => RightsLevel > 0;
@@ -34,7 +33,7 @@ public class User(Id id, int index) : Avatar(AvatarType.User, id, index), IUser
         IsStaff = p.ReadBool();
 
         if (p.Client is ClientType.Flash)
-            UnknownInt1 = p.ReadInt();
+            BadgeRank = p.ReadInt();
     }
 
     protected override void OnUpdate(AvatarStatus update) { }
@@ -55,6 +54,6 @@ public class User(Id id, int index) : Avatar(AvatarType.User, id, index), IUser
         p.WriteBool(IsStaff);
 
         if (p.Client is ClientType.Flash)
-            p.WriteInt(UnknownInt1);
+            p.WriteInt(BadgeRank);
     }
 }
