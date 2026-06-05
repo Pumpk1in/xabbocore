@@ -221,8 +221,8 @@ public class AvatarStatus : IAvatarStatus, IReadOnlyDictionary<string, IReadOnly
         HeadDirection = p.ReadInt();
         Direction = p.ReadInt();
 
-        if (p.Client is ClientType.Flash or ClientType.Unity)
-            p.ReadInt(); // unknown field added in WIN63-202603311836
+        if (p.Client is ClientType.Flash)
+            p.ReadInt(); // unknown field added in WIN63-202603311836 (Flash only)
 
         ParseStatus(p.ReadString());
     }
@@ -233,8 +233,8 @@ public class AvatarStatus : IAvatarStatus, IReadOnlyDictionary<string, IReadOnly
         p.Compose(Location);
         p.WriteInt(HeadDirection);
         p.WriteInt(Direction);
-        if (p.Client is ClientType.Flash or ClientType.Unity)
-            p.WriteInt(0); // unknown field added in WIN63-202603311836
+        if (p.Client is ClientType.Flash)
+            p.WriteInt(0); // unknown field added in WIN63-202603311836 (Flash only)
         p.WriteString(CompileStatus());
     }
 

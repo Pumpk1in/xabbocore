@@ -87,7 +87,7 @@ public class AvatarWiredMovement : WiredMovement
         AnimationTime = p.ReadInt();
         BodyDirection = p.ReadInt();
         HeadDirection = p.ReadInt();
-        if (p.Client is ClientType.Flash or ClientType.Unity)
+        if (p.Client is ClientType.Flash)
         {
             // WIN63-202603311836 added a bool; WIN63-202605181326 added an int
             // that is only present when the bool is true (observed value: 200).
@@ -110,7 +110,7 @@ public class AvatarWiredMovement : WiredMovement
         p.WriteInt(AnimationTime);
         p.WriteInt(BodyDirection);
         p.WriteInt(HeadDirection);
-        if (p.Client is ClientType.Flash or ClientType.Unity)
+        if (p.Client is ClientType.Flash)
             p.WriteBool(false); // matches the WIN63-202603311836 bool; we never emit the optional int
     }
 }
@@ -140,8 +140,8 @@ public class FloorItemWiredMovement : WiredMovement
         ItemId = p.ReadId();
         AnimationTime = p.ReadInt();
         Rotation = p.ReadInt();
-        if (p.Client is ClientType.Flash or ClientType.Unity)
-            p.ReadString(); // unknown field added in WIN63-202603311836
+        if (p.Client is ClientType.Flash)
+            p.ReadString(); // unknown field added in WIN63-202603311836 (Flash only)
     }
 
     protected override void Compose(in PacketWriter p)
@@ -156,8 +156,8 @@ public class FloorItemWiredMovement : WiredMovement
         p.WriteId(ItemId);
         p.WriteInt(AnimationTime);
         p.WriteInt(Rotation);
-        if (p.Client is ClientType.Flash or ClientType.Unity)
-            p.WriteString(""); // unknown field added in WIN63-202603311836
+        if (p.Client is ClientType.Flash)
+            p.WriteString(""); // unknown field added in WIN63-202603311836 (Flash only)
     }
 }
 
