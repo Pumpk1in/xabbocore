@@ -37,6 +37,7 @@ public class GameDataLoader(
     private static GameDataType? GetGameDataTypeFromName(string name) => name switch
     {
         "figurepartlist" => GameDataType.FigureData,
+        "figurepartlist_json" => GameDataType.FigureData,
         "furnidata" => GameDataType.FurniData,
         "productdata" => GameDataType.ProductData,
         "external_texts" => GameDataType.ExternalTexts,
@@ -46,6 +47,11 @@ public class GameDataLoader(
 
     private static string GetSimpleNameForGameDataType(GameDataType type)
     {
+        // FigureData is fetched as JSON from modern hotels; use a separate cache directory so
+        // stale XML payloads cached by older library versions are not reused as JSON input.
+        if (type == GameDataType.FigureData)
+            return "figure_json";
+
         string name = type.ToString().ToLower();
         if (name.StartsWith("external"))
             name = name[8..];

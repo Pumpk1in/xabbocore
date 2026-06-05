@@ -41,4 +41,17 @@ public sealed record FigurePartSetCollection(
             .ToImmutableDictionary(partSet => partSet.Id)
     )
     { }
+
+    internal FigurePartSetCollection(Json.FigureData.PartSetCollection proxy) : this(
+        Type: H.GetFigurePartType(proxy.Type),
+        PaletteId: proxy.PaletteId,
+        Mand_m_0: proxy.mand_m_0,
+        Mand_f_0: proxy.mand_f_0,
+        Mand_m_1: proxy.mand_m_1,
+        Mand_f_1: proxy.mand_f_1,
+        PartSets: proxy.Sets
+            .Select(partSet => new FigurePartSet(partSet))
+            .ToImmutableDictionary(partSet => partSet.Id)
+    )
+    { }
 }

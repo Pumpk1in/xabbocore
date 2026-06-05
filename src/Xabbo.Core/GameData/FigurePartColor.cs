@@ -26,4 +26,13 @@ public sealed record FigurePartColor(
         RequiredClubLevel: proxy.RequiredClubLevel
     )
     { }
+
+    internal FigurePartColor(Json.FigureData.Color proxy) : this(
+        Id: proxy.Id,
+        Index: proxy.Index,
+        Value: proxy.Value,
+        IsSelectable: proxy.IsSelectable,
+        RequiredClubLevel: proxy.RequiredClubLevel
+    )
+    { }
 }

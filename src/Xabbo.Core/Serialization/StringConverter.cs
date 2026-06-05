@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Buffers;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,8 +12,17 @@ internal class StringConverter : JsonConverter<string>
     {
         if (reader.TokenType == JsonTokenType.Number)
         {
-            int stringValue = reader.GetInt32();
-            return stringValue.ToString();
+            // Habbo's JSON exporter emits unquoted values for content that looks numeric, including
+            // hex colour codes that happen to end in 'E' followed by digits (e.g. "4481E8" is exported
+            // as 4.481E8 in scientific notation). Read the raw token text and strip the artificial
+            // decimal point to recover the original hex representation.
+            byte[] raw = reader.HasValueSequence
+                ? BuffersExtensions.ToArray(reader.ValueSequence)
+                : reader.ValueSpan.ToArray();
+
+            string text = Encoding.UTF8.GetString(raw);
+            int dot = text.IndexOf('.');
+            return dot < 0 ? text : text.Remove(dot, 1);
         }
         else if (reader.TokenType == JsonTokenType.String)
         {

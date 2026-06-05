@@ -50,4 +50,18 @@ public sealed record FigurePartSet(
             .ToImmutableArray()
     )
     { }
+
+    internal FigurePartSet(Json.FigureData.PartSet proxy) : this(
+        Id: proxy.Id,
+        Gender: H.ToGender(proxy.Gender),
+        RequiredClubLevel: proxy.RequiredClubLevel,
+        IsColorable: proxy.IsColorable,
+        IsSelectable: proxy.IsSelectable,
+        IsPreSelectable: proxy.IsPreSelectable,
+        IsSellable: proxy.IsSellable,
+        Parts: proxy.Parts
+            .Select(part => new FigurePart(part))
+            .ToImmutableArray()
+    )
+    { }
 }

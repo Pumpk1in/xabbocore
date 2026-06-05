@@ -24,4 +24,13 @@ public sealed record FigurePart(
         ColorIndex: proxy.ColorIndex
     )
     { }
+
+    internal FigurePart(Json.FigureData.Part proxy) : this(
+        Id: proxy.Id,
+        Type: H.GetFigurePartType(proxy.Type),
+        IsColorable: proxy.IsColorable,
+        Index: proxy.Index,
+        ColorIndex: proxy.ColorIndex
+    )
+    { }
 }

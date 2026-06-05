@@ -24,6 +24,16 @@ public sealed class FigureData
     }
 
     /// <summary>
+    /// Loads figure data in modern JSON format from the specified JSON string.
+    /// </summary>
+    public static FigureData LoadJson(string json) => new(Json.FigureData.Load(json));
+
+    /// <summary>
+    /// Loads figure data in modern JSON format from the specified file path.
+    /// </summary>
+    public static FigureData LoadJsonFile(string path) => new(Json.FigureData.LoadFile(path));
+
+    /// <summary>
     /// Loads figure data in origins JSON format from the specified file path.
     /// </summary>
     public static FigureData LoadJsonOrigins(string filePath) => new(Json.Origins.FigureData.Load(filePath));
@@ -55,6 +65,17 @@ public sealed class FigureData
             .ToImmutableDictionary(palette => palette.Id);
 
         SetCollections = proxy.SetCollections
+            .Select(setCollection => new FigurePartSetCollection(setCollection))
+            .ToImmutableDictionary(setCollection => setCollection.Type);
+    }
+
+    internal FigureData(Json.FigureData proxy)
+    {
+        Palettes = proxy.Colors.Palettes
+            .Select(palette => new FigureColorPalette(palette))
+            .ToImmutableDictionary(palette => palette.Id);
+
+        SetCollections = proxy.Sets.SetCollections
             .Select(setCollection => new FigurePartSetCollection(setCollection))
             .ToImmutableDictionary(setCollection => setCollection.Type);
     }

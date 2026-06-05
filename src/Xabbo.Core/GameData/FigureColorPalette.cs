@@ -20,4 +20,12 @@ public sealed record FigureColorPalette(
             .ToImmutableDictionary(color => color.Id)
     )
     { }
+
+    internal FigureColorPalette(Json.FigureData.Palette proxy) : this(
+        Id: proxy.Id,
+        Colors: proxy.Colors
+            .Select(color => new FigurePartColor(color))
+            .ToImmutableDictionary(color => color.Id)
+    )
+    { }
 }

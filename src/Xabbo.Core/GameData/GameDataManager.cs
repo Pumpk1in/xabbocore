@@ -112,7 +112,7 @@ public class GameDataManager : IGameDataManager
                         if (hotel.IsOrigins)
                             Figure = FigureData.LoadJsonOrigins(filePath);
                         else
-                            Figure = FigureData.LoadXml(filePath);
+                            Figure = FigureData.LoadJsonFile(filePath);
                         break;
                     case GameDataType.FurniData:
                         if (hotel.IsOrigins)

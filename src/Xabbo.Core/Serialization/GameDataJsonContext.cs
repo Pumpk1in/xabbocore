@@ -12,5 +12,7 @@ namespace Xabbo.Core.Serialization;
 [JsonSerializable(typeof(GameDataHashesContainer))]
 [JsonSerializable(typeof(GameDataHash))]
 [JsonSerializable(typeof(FurniData))]
+[JsonSerializable(typeof(FigureData))]
+[JsonSerializable(typeof(FigureDataContainer))]
 [JsonSerializable(typeof(ProductData))]
 internal partial class GameDataJsonContext : JsonSerializerContext;
