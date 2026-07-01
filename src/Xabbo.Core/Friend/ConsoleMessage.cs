@@ -5,6 +5,8 @@ namespace Xabbo.Core;
 public class ConsoleMessage : IParserComposer<ConsoleMessage>
 {
     public Id ChatId { get; set; }
+    public int MessageType { get; set; }
+    public int HabbiconId { get; set; }
     public string Content { get; set; } = "";
     public int SecondsSinceSent { get; set; }
     public string? Time { get; set; }
@@ -23,18 +25,32 @@ public class ConsoleMessage : IParserComposer<ConsoleMessage>
             Time = p.ReadString(),
             Content = p.ReadString().Replace('\r', '\n'),
         },
-        not ClientType.Shockwave => new()
+        not ClientType.Shockwave => ParseModern(in p)
+    };
+
+    private static ConsoleMessage ParseModern(in PacketReader p)
+    {
+        var msg = new ConsoleMessage
         {
             ChatId = p.ReadId(),
-            Content = p.ReadString(),
-            SecondsSinceSent = p.ReadInt(),
-            MessageId = p.ReadString(),
-            ConfirmationId = p.ReadInt(),
-            SenderId = p.ReadId(),
-            SenderName = p.ReadString(),
-            SenderFigure = p.ReadString(),
+            MessageType = p.ReadInt(),
+        };
+        // MessageType 0 = plain text message, otherwise a Habbicon (custom image) referenced by id.
+        if (msg.MessageType == 0)
+            msg.Content = p.ReadString();
+        else
+        {
+            msg.HabbiconId = p.ReadInt();
+            msg.Content = $":habbicon:{msg.HabbiconId}:";
         }
-    };
+        msg.SecondsSinceSent = p.ReadInt();
+        msg.MessageId = p.ReadString();
+        msg.ConfirmationId = p.ReadInt();
+        msg.SenderId = p.ReadId();
+        msg.SenderName = p.ReadString();
+        msg.SenderFigure = p.ReadString();
+        return msg;
+    }
 
     void IComposer.Compose(in PacketWriter p)
     {
@@ -48,7 +64,11 @@ public class ConsoleMessage : IParserComposer<ConsoleMessage>
         else
         {
             p.WriteId(ChatId);
-            p.WriteString(Content);
+            p.WriteInt(MessageType);
+            if (MessageType == 0)
+                p.WriteString(Content);
+            else
+                p.WriteInt(HabbiconId);
             p.WriteInt(SecondsSinceSent);
             p.WriteString(MessageId);
             p.WriteInt(ConfirmationId);
