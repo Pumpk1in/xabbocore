@@ -31,7 +31,6 @@ public class User(Id id, int index) : Avatar(AvatarType.User, id, index), IUser
         FigureExtra = p.ReadString();
         AchievementScore = p.ReadInt();
         IsStaff = p.ReadBool();
-
         if (p.Client is ClientType.Flash)
             BadgeRank = p.ReadInt();
     }
@@ -52,7 +51,6 @@ public class User(Id id, int index) : Avatar(AvatarType.User, id, index), IUser
         p.WriteString(FigureExtra);
         p.WriteInt(AchievementScore);
         p.WriteBool(IsStaff);
-
         if (p.Client is ClientType.Flash)
             p.WriteInt(BadgeRank);
     }

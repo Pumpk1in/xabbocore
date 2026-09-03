@@ -152,10 +152,12 @@ public class FloorItemWiredMovement : WiredMovement
         if (p.Client is ClientType.Flash)
         {
             HasOvershoot = p.ReadBool();
+
             if (HasOvershoot)
                 OvershootDistance = p.ReadInt();
 
             HasCurve = p.ReadBool();
+
             if (HasCurve)
                 CurveStrength = p.ReadInt();
         }
@@ -176,10 +178,12 @@ public class FloorItemWiredMovement : WiredMovement
         if (p.Client is ClientType.Flash)
         {
             p.WriteBool(HasOvershoot);
+
             if (HasOvershoot)
                 p.WriteInt(OvershootDistance);
 
             p.WriteBool(HasCurve);
+
             if (HasCurve)
                 p.WriteInt(CurveStrength);
         }

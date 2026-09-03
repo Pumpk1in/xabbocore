@@ -87,10 +87,9 @@ public sealed class InventoryItem : IInventoryItem, IParserComposer<InventoryIte
 
         if (p.Client is ClientType.Unity)
         {
-            // TODO Unity
-            // p.ReadShort(); // ?
-            // p.ReadString(); // string "r" / "s"
-            // p.ReadInt();
+            p.ReadShort(); // ?
+            p.ReadString(); // string "r" / "s"
+            p.ReadInt();
         }
 
         if (Type is ItemType.Floor)
@@ -102,8 +101,14 @@ public sealed class InventoryItem : IInventoryItem, IParserComposer<InventoryIte
             }
             else
             {
-                // TODO Unity
+                SlotId = p.ReadString();
+                Extra = p.ReadLong();
             }
+        }
+
+        if (p.Client is ClientType.Unity)
+        {
+            p.ReadBool(); // idk what this is for, always false?
         }
     }
 
