@@ -80,6 +80,7 @@ public static partial class H
             case "mc": partType = FigurePartType.MountCompanion; break;
             case "mcl": partType = FigurePartType.MountCompanionLeft; break;
             case "mcr": partType = FigurePartType.MountCompanionRight; break;
+            case "mco": partType = FigurePartType.MiscOverlay; break;
             default: partType = default; return false;
         }
         return true;

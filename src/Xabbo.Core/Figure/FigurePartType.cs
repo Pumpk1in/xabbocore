@@ -37,7 +37,8 @@ public enum FigurePartType
     PetRight,
     MountCompanion,
     MountCompanionLeft,
-    MountCompanionRight
+    MountCompanionRight,
+    MiscOverlay
 }
 
 public static partial class XabboEnumExtensions
@@ -68,6 +69,7 @@ public static partial class XabboEnumExtensions
             FigurePartType.MountCompanion => "mc",
             FigurePartType.MountCompanionLeft => "mcl",
             FigurePartType.MountCompanionRight => "mcr",
+            FigurePartType.MiscOverlay => "mco",
             _ => throw new ArgumentException($"Unknown figure part type: {figurePartType}", nameof(figurePartType)),
         };
     }

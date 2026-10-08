@@ -46,6 +46,7 @@ public sealed record FigurePartSet(
         IsPreSelectable: proxy.IsPreSelectable,
         IsSellable: proxy.IsSellable,
         Parts: proxy.Parts
+            .Where(part => H.TryGetFigurePartType(part.Type, out _))
             .Select(part => new FigurePart(part))
             .ToImmutableArray()
     )
@@ -60,6 +61,7 @@ public sealed record FigurePartSet(
         IsPreSelectable: proxy.IsPreSelectable,
         IsSellable: proxy.IsSellable,
         Parts: proxy.Parts
+            .Where(part => H.TryGetFigurePartType(part.Type, out _))
             .Select(part => new FigurePart(part))
             .ToImmutableArray()
     )
